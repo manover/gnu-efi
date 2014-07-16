@@ -1,0 +1,18 @@
+Source: gnu-efi
+Section: devel
+Priority: optional
+Maintainer: Nigel Croxon <nigel.croxon@hp.com>
+Build-Depends:
+ debhelper (>= 9),
+ binutils,
+ gcc-multilib [amd64 i386 kfreebsd-amd64],
+Standards-Version: 3.9.5
+Homepage: http://sourceforge.net/projects/gnu-efi/
+
+Package: gnu-efi
+Architecture: amd64 i386 ia64 kfreebsd-amd64
+Depends: ${misc:Depends}
+Description: Library for developing EFI applications
+ GNU toolchain for building applications that can run in the environment
+ presented by Intel's EFI (Extensible Firmware Interface). EFI is a firmware
+ specification for the "BIOS" on ia64(IPF), IA-32(x86) and x86_64 systems.

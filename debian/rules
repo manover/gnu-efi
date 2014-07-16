@@ -1,0 +1,84 @@
+#!/usr/bin/make -f
+
+DEB_BUILD_ARCH ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+
+ifneq (,$(findstring i386,$(DEB_BUILD_ARCH)))
+	BUILD_ARCH := ia32
+else ifneq (,$(findstring amd64,$(DEB_BUILD_ARCH)))
+	BUILD_ARCH := x86_64
+else
+	BUILD_ARCH := $(DEB_BUILD_ARCH)
+endif
+
+%:
+	dh ${@} --parallel
+
+override_dh_auto_build:
+ifneq (,$(findstring amd64,$(DEB_BUILD_ARCH)))
+	mkdir build-ia32
+	$(MAKE) -C build-ia32 -f ../Makefile SRCDIR=$(CURDIR) ARCH=ia32
+ endif
+
+ifneq (,$(findstring i386,$(DEB_BUILD_ARCH)))
+	mkdir build-x86_64
+	$(MAKE) -C build-x86_64 -f ../Makefile SRCDIR=$(CURDIR) ARCH=x86_64 HOSTARCH=ia32
+endif
+
+	$(MAKE) ARCH=$(BUILD_ARCH)
+
+override_dh_auto_clean:
+	dh_auto_clean
+
+	rm -rf build-*
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
+
+override_dh_install:
+	dh_install
+
+	# gnu-efi files
+	mkdir -p debian/gnu-efi/usr/include/efi
+	cp -r inc/* debian/gnu-efi/usr/include/efi
+	rm debian/gnu-efi/usr/include/efi/Makefile
+	rm debian/gnu-efi/usr/include/efi/inc.mak
+	rm debian/gnu-efi/usr/include/efi/make.inf
+	rm debian/gnu-efi/usr/include/efi/makefile.hdr
+	rm debian/gnu-efi/usr/include/efi/protocol/make.inf
+	rm debian/gnu-efi/usr/include/efi/protocol/makefile.hdr
+	rm debian/gnu-efi/usr/include/efi/protocol/readme.txt
+ifeq ($(DEB_BUILD_ARCH),ia64)
+	rm -rf debian/gnu-efi/usr/include/efi/ia32
+	rm -rf debian/gnu-efi/usr/include/efi/x84_64
+else
+	rm -rf debian/gnu-efi/usr/include/efi/ia64
+endif
+	mkdir -p debian/gnu-efi/usr/lib
+	cp gnuefi/*.a debian/gnu-efi/usr/lib
+ifeq ($(DEB_BUILD_ARCH),kfreebsd-amd64)
+	cp gnuefi/elf_$(BUILD_ARCH)_fbsd_efi.lds debian/gnu-efi/usr/lib
+else
+	cp gnuefi/elf_$(BUILD_ARCH)_efi.lds debian/gnu-efi/usr/lib
+endif
+	cp gnuefi/crt0-efi-$(BUILD_ARCH).o debian/gnu-efi/usr/lib
+	cp lib/*.a debian/gnu-efi/usr/lib
+
+ifneq (,$(findstring amd64,$(DEB_BUILD_ARCH)))
+	mkdir -p debian/gnu-efi/usr/lib32
+	cp build-ia32/gnuefi/*.a debian/gnu-efi/usr/lib32
+	cp gnuefi/elf_ia32_efi.lds debian/gnu-efi/usr/lib32
+	cp build-ia32/gnuefi/crt0-efi-ia32.o debian/gnu-efi/usr/lib32
+	cp build-ia32/lib/*.a debian/gnu-efi/usr/lib32
+endif
+
+ifneq (,$(findstring i386,$(DEB_BUILD_ARCH)))
+	mkdir -p debian/gnu-efi/usr/lib64
+	cp build-x86_64/gnuefi/*.a debian/gnu-efi/usr/lib64
+ifeq ($(DEB_BUILD_ARCH),kfreebsd-i386)
+	cp gnuefi/elf_x86_64_fbsd_efi.lds debian/gnu-efi/usr/lib64
+else
+	cp gnuefi/elf_x86_64_efi.lds debian/gnu-efi/usr/lib64
+endif
+	cp build-x86_64/gnuefi/crt0-efi-x86_64.o debian/gnu-efi/usr/lib64
+	cp build-x86_64/lib/*.a debian/gnu-efi/usr/lib64
+endif
