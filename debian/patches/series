@@ -1,1 +1,2 @@
 Temporarily-build-without-stdarg.h-in-efistdarg.h-Cl.patch
+Stub-out-va_copy-in-efistdarg.h.patch
