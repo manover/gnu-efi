@@ -1,9 +1,15 @@
-Author: Daniel Baumann <mail@daniel-baumann.ch>
-Description: Temporarily build without stdarg.h in efistdarg.h (Closes: #747158).
+From: Daniel Baumann <mail@daniel-baumann.ch>
+Date: Sat, 19 Jul 2014 13:42:45 +0200
+Subject: Temporarily build without stdarg.h in efistdarg.h (Closes: #747158).
 
-diff -Naurp gnu-efi.orig/inc/efistdarg.h gnu-efi/inc/efistdarg.h
---- gnu-efi.orig/inc/efistdarg.h
-+++ gnu-efi/inc/efistdarg.h
+---
+ inc/efistdarg.h | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/inc/efistdarg.h b/inc/efistdarg.h
+index 8a96b94..312eebc 100644
+--- a/inc/efistdarg.h
++++ b/inc/efistdarg.h
 @@ -18,9 +18,6 @@ Abstract:
  Revision History
  
