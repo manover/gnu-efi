@@ -1,3 +1,12 @@
+gnu-efi (3.0v-4) unstable; urgency=medium
+
+  * Take over maintenance
+  * Add git information and git-buildpackage configuration
+  * Use gbp pq for maintaining the patch queue
+  * inc/efistdarg.h: Stub out va_copy (Closes: #753682)
+
+ -- Julian Andres Klode <jak@debian.org>  Sat, 19 Jul 2014 14:02:06 +0200
+
 gnu-efi (3.0v-3) unstable; urgency=low
 
   * Stepping down from maintainers, no interest anymore since syslinux uses
