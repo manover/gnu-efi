@@ -8,6 +8,8 @@ Build-Depends:
  binutils,
  gcc-multilib [amd64 i386 kfreebsd-amd64],
 Standards-Version: 3.9.5
+Vcs-Git: git://anonscm.debian.org/collab-maint/gnu-efi.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/gnu-efi.git
 Homepage: http://sourceforge.net/projects/gnu-efi/
 
 Package: gnu-efi
