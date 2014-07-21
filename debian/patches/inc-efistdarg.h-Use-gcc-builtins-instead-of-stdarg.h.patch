@@ -1,0 +1,39 @@
+From: Julian Andres Klode <jak@debian.org>
+Date: Mon, 21 Jul 2014 13:14:26 +0200
+Subject: inc/efistdarg.h: Use gcc builtins instead of stdarg.h or broken stubs
+
+We cannot use stdarg.h, as this breaks applications compiling with
+-nostdinc because those will not find the header.
+
+We also cannot use the stubs, as they just produce broken code, as
+seen in the gummiboot 45-1 Debian release.
+---
+ inc/efistdarg.h | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/inc/efistdarg.h b/inc/efistdarg.h
+index 8a96b94..440f9cd 100644
+--- a/inc/efistdarg.h
++++ b/inc/efistdarg.h
+@@ -18,16 +18,11 @@ Abstract:
+ Revision History
+ 
+ --*/
+-#ifdef __GNUC__
+-#include "stdarg.h"
+-#else
+-#define _INTSIZEOF(n)   ( (sizeof(n) + sizeof(UINTN) - 1) & ~(sizeof(UINTN) - 1) )
+ 
+-typedef CHAR8 * va_list;
++typedef __builtin_va_list va_list;
+ 
+-#define va_start(ap,v)  ( ap = (va_list)&v + _INTSIZEOF(v) )
+-#define va_arg(ap,t)    ( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )
+-#define va_end(ap)  ( ap = (va_list)0 )
++#define va_start(v,l)	__builtin_va_start(v,l)
++#define va_end(v)	__builtin_va_end(v)
++#define va_arg(v,l)	__builtin_va_arg(v,l)
++#define va_copy(d,s)	__builtin_va_copy(d,s)
+ #endif
+-
+-#endif  /* _INC_STDARG */
