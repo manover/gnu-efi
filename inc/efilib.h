@@ -144,6 +144,12 @@ EFIDebugVariable (
     VOID
     );
 
+INTN
+GetShellArgcArgv(
+    EFI_HANDLE ImageHandle,
+    CHAR16 **Argv[]  /* Statically allocated */
+    );
+
 VOID
 SetCrc (
     IN OUT EFI_TABLE_HEADER *Hdr
@@ -415,6 +421,12 @@ VSPrint (
     IN UINTN    StrSize,
     IN CHAR16   *fmt,
     va_list     args
+    );
+
+CHAR16 *
+VPoolPrint (
+    IN CHAR16           *fmt,
+    va_list             args
     );
 
 CHAR16 *
