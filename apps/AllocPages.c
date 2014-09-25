@@ -89,7 +89,6 @@ BS_Code   0000000071902000-00000000721FEFFF 00000000000008FD 000000000000000F
 
 #include <efi.h>
 #include <efilib.h>
-#include <ParseCmdLine.h>
 
 
 #define MAX_NUM_PAGES 0x000000000F000000
@@ -108,25 +107,18 @@ efi_main (EFI_HANDLE image, EFI_SYSTEM_TABLE *systab)
 {
 
 	EFI_STATUS efi_status;
-	EFI_GUID LoadedImageProtocol = LOADED_IMAGE_PROTOCOL;
-	EFI_LOADED_IMAGE *info;
-
-	CHAR16 arglist[MAX_ARGS+1] = {0};
-	CHAR16 *argv[MAX_ARGS];
-	INTN argc = 0;
+	CHAR16 **argv;
+	INTN argc;
 	INTN err = 0;
+#if DEBUG
 	INTN c = 0;
-
+#endif
 	INTN AllocType = -1;
 	INTN MemType = -1;
 	INTN NumPages = -1;
 	UINTN Addr = 0;
 
 	InitializeLib(image, systab);
-
-        efi_status = uefi_call_wrapper( BS->HandleProtocol, 3, image,
-                &LoadedImageProtocol, &info);
-
 
 	Print(L"AllocatePage: __AllocType__ __MemType__ __NumPages__ [__Addr__]\n");
 	Print(L"__AllocType__ {0,1,2} -- Any, MaxAddr, Addr\n"); 
@@ -137,22 +129,9 @@ efi_main (EFI_HANDLE image, EFI_SYSTEM_TABLE *systab)
 	Print(L"\n");
 
 #if DEBUG
-	Print(L"%s\n", info->LoadOptions);
+	Print(L"Now get argc/argv\n");
 #endif
-
-
-#if DEBUG
-	Print(L"Set up arglist\n");
-#endif
-	CopyMem(arglist, info->LoadOptions, info->LoadOptionsSize);
-#if DEBUG
-	Print(L"arglist = <%s>\n", arglist);
-#endif
-	
-#if DEBUG
-	Print(L"Now try ParseCmdLine\n");
-#endif
-	argc = ParseCmdLine(argv, arglist, info->LoadOptionsSize);
+	argc = GetShellArgcArgv(image, &argv);
 #if DEBUG
 	Print(L"argc = %d\n", argc);
 #endif
@@ -162,7 +141,7 @@ efi_main (EFI_HANDLE image, EFI_SYSTEM_TABLE *systab)
 		Print(L"argv[%d] = <%s>\n", c, argv[c]);
 	}
 #endif
-	if ( (argc < 3) || (argc > 5) ) {
+	if ( (argc < 4) || (argc > 5) ) {
 		Print(L"Wrong argument count\n");
 		return EFI_SUCCESS;
 	}

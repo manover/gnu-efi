@@ -60,7 +60,6 @@ Available 00000000709FC000-00000000710E3FFF 00000000000006E8 000000000000000F
 
 #include <efi.h>
 #include <efilib.h>
-#include <ParseCmdLine.h>
 
 /*
  * FreePages:  __PhysAddr__ __PgCnt__
@@ -82,23 +81,17 @@ efi_main (EFI_HANDLE image, EFI_SYSTEM_TABLE *systab)
 {
 
 	EFI_STATUS efi_status;
-	EFI_GUID LoadedImageProtocol = LOADED_IMAGE_PROTOCOL;
-	EFI_LOADED_IMAGE *info;
-
-	CHAR16 arglist[MAX_ARGS+1] = {0};
-	CHAR16 *argv[MAX_ARGS];
+	CHAR16 **argv;
 	INTN argc = 0;
+#if DEBUG
 	INTN c = 0;
+#endif
 	INTN err = 0;
 
 	INTN PgCnt = -1;
 	UINTN PhysAddr = 0;
 
 	InitializeLib(image, systab);
-
-        efi_status = uefi_call_wrapper( BS->HandleProtocol, 3, image,
-                &LoadedImageProtocol, &info);
-
 
 	Print(L"FreePages: __PhysAddr__ __PgCnt__\n");
 	Print(L"__PhysAddr__   0... %llx\n", MAX_ADDR);
@@ -107,22 +100,9 @@ efi_main (EFI_HANDLE image, EFI_SYSTEM_TABLE *systab)
 	Print(L"\n");
 
 #if DEBUG
-	Print(L"%s\n", info->LoadOptions);
+	Print(L"Now parse argc/argv\n");
 #endif
-
-
-#if DEBUG
-	Print(L"Set up arglist\n");
-#endif
-	CopyMem(arglist, info->LoadOptions, info->LoadOptionsSize);
-#if DEBUG
-	Print(L"arglist = <%s>\n", arglist);
-#endif
-	
-#if DEBUG
-	Print(L"Now try ParseCmdLine\n");
-#endif
-	argc = ParseCmdLine(argv, arglist, info->LoadOptionsSize);
+	argc = GetShellArgcArgv(image, &argv);
 #if DEBUG
 	Print(L"argc = %d\n", argc);
 #endif
