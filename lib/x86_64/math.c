@@ -42,7 +42,7 @@ LShiftU64 (
     )
 // Left shift 64bit by 32bit and get a 64bit result
 {
-#if defined(__GNUC__) || defined(_MSC_EXTENSIONS)
+#ifdef __GNUC__
     return Operand << Count;
 #else
     UINT64      Result;
@@ -77,7 +77,7 @@ RShiftU64 (
     )
 // Right shift 64bit by 32bit and get a 64bit result
 {
-#if defined(__GNUC__) || defined(_MSC_EXTENSIONS)
+#ifdef __GNUC__
     return Operand >> Count;
 #else
     UINT64      Result;
@@ -113,7 +113,7 @@ MultU64x32 (
     )
 // Multiple 64bit by 32bit and get a 64bit result
 {
-#if defined(__GNUC__) || defined(_MSC_EXTENSIONS)
+#ifdef __GNUC__
     return Multiplicand * Multiplier;
 #else
     UINT64      Result;
@@ -140,7 +140,7 @@ DivU64x32 (
 // divide 64bit by 32bit and get a 64bit result
 // N.B. only works for 31bit divisors!!
 {
-#if defined(__GNUC__) || defined(_MSC_EXTENSIONS)
+#ifdef __GNUC__
     if (Remainder)
 	*Remainder = Dividend % Divisor;
     return Dividend / Divisor;

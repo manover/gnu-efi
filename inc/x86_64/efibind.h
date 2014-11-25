@@ -245,13 +245,9 @@ typedef uint64_t   UINTN;
 
 //
 // When build similiar to FW, then link everything together as
-// one big module. For the MSVC toolchain, we simply tell the
-// linker what our driver init function is using /ENTRY.
+// one big module.
 //
-#if defined(_MSC_EXTENSIONS)
-    #define EFI_DRIVER_ENTRY_POINT(InitFunction) \
-        __pragma(comment(linker, "/ENTRY:" # InitFunction))
-#else
+
     #define EFI_DRIVER_ENTRY_POINT(InitFunction)    \
         UINTN                                       \
         InitializeDriver (                          \
@@ -268,12 +264,11 @@ typedef uint64_t   UINTN;
             EFI_SYSTEM_TABLE *systab                \
             ) __attribute__((weak,                  \
                     alias ("InitializeDriver")));
-#endif
 
     #define LOAD_INTERNAL_DRIVER(_if, type, name, entry)    \
             (_if)->LoadInternal(type, name, entry)
 
-#endif // EFI_NT_EMULATOR
+#endif // EFI_FW_NT 
 
 //
 // Some compilers don't support the forward reference construct:
@@ -376,12 +371,7 @@ UINT64 efi_call10(void *func, UINT64 arg1, UINT64 arg2, UINT64 arg3,
   __VA_ARG_NSUFFIX__(_cast64_efi_call, __VA_ARGS__) (func , ##__VA_ARGS__)
 
 #endif
-
-#if defined(HAVE_USE_MS_ABI) && !defined(_MSC_EXTENSIONS)
-    #define EFI_FUNCTION __attribute__((ms_abi))
-#else
-    #define EFI_FUNCTION
-#endif
+#define EFI_FUNCTION __attribute__((ms_abi))
 
 #ifdef _MSC_EXTENSIONS
 #pragma warning ( disable : 4731 )  // Suppress warnings about modification of EBP

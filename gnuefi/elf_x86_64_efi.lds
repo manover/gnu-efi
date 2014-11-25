@@ -15,14 +15,10 @@ SECTIONS
   . = ALIGN(4096);
   .text :
   {
-   _text = .;
    *(.text)
    *(.text.*)
    *(.gnu.linkonce.t.*)
-   . = ALIGN(16);
   }
-  _etext = .;
-  _text_size = . - _text;
   . = ALIGN(4096);
   .reloc :
   {
@@ -31,7 +27,6 @@ SECTIONS
   . = ALIGN(4096);
   .data :
   {
-   _data = .;
    *(.rodata*)
    *(.got.plt)
    *(.got)
@@ -46,8 +41,6 @@ SECTIONS
    *(COMMON)
    *(.rel.local)
   }
-  _edata = .;
-  _data_size = . - _etext;
   . = ALIGN(4096);
   .dynamic  : { *(.dynamic) }
   . = ALIGN(4096);
