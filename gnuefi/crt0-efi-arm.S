@@ -1,19 +1,12 @@
 /*
- * crt0-efi-aarch64.S - PE/COFF header for AArch64 EFI applications
+ * crt0-efi-arm.S - PE/COFF header for ARM EFI applications
  *
  * Copright (C) 2014 Linaro Ltd. <ard.biesheuvel@linaro.org>
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice and this list of conditions, without modification.
- * 2. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License as published by the Free Software Foundation;
- * either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
  */
 
 	.section	.text.head
@@ -30,18 +23,19 @@ pe_header:
 	.ascii	"PE"
 	.short 	0
 coff_header:
-	.short	0xaa64				// AArch64
+	.short	0x1c2				// Mixed ARM/Thumb
 	.short	2				// nr_sections
 	.long	0 				// TimeDateStamp
 	.long	0				// PointerToSymbolTable
 	.long	1				// NumberOfSymbols
 	.short	section_table - optional_header	// SizeOfOptionalHeader
-	.short	0x206				// Characteristics.
+	.short	0x306				// Characteristics.
+						// IMAGE_FILE_32BIT_MACHINE |
 						// IMAGE_FILE_DEBUG_STRIPPED |
 						// IMAGE_FILE_EXECUTABLE_IMAGE |
 						// IMAGE_FILE_LINE_NUMS_STRIPPED
 optional_header:
-	.short	0x20b				// PE32+ format
+	.short	0x10b				// PE32+ format
 	.byte	0x02				// MajorLinkerVersion
 	.byte	0x14				// MinorLinkerVersion
 	.long	_edata - _start			// SizeOfCode
@@ -49,9 +43,10 @@ optional_header:
 	.long	0				// SizeOfUninitializedData
 	.long	_start - ImageBase		// AddressOfEntryPoint
 	.long	_start - ImageBase		// BaseOfCode
+	.long	0				// BaseOfData
 
 extra_header_fields:
-	.quad	0				// ImageBase
+	.long	0				// ImageBase
 	.long	0x20				// SectionAlignment
 	.long	0x8				// FileAlignment
 	.short	0				// MajorOperatingSystemVersion
@@ -69,10 +64,10 @@ extra_header_fields:
 	.long	0				// CheckSum
 	.short	EFI_SUBSYSTEM			// Subsystem
 	.short	0				// DllCharacteristics
-	.quad	0				// SizeOfStackReserve
-	.quad	0				// SizeOfStackCommit
-	.quad	0				// SizeOfHeapReserve
-	.quad	0				// SizeOfHeapCommit
+	.long	0				// SizeOfStackReserve
+	.long	0				// SizeOfStackCommit
+	.long	0				// SizeOfHeapReserve
+	.long	0				// SizeOfHeapCommit
 	.long	0				// LoaderFlags
 	.long	0x6				// NumberOfRvaAndSizes
 
@@ -121,20 +116,23 @@ section_table:
 	.long	0xe0500020	// Characteristics (section flags)
 
 _start:
-	stp		x29, x30, [sp, #-32]!
-	mov		x29, sp
+	stmfd		sp!, {r0-r2, lr}
 
-	stp		x0, x1, [sp, #16]
-	mov		x2, x0
-	mov		x3, x1
-	adr		x0, ImageBase
-	adrp		x1, _DYNAMIC
-	add		x1, x1, #:lo12:_DYNAMIC
+	mov		r2, r0
+	mov		r3, r1
+	adr		r1, .L_DYNAMIC
+	ldr		r0, [r1]
+	add		r1, r0, r1
+	adr		r0, ImageBase
 	bl		_relocate
-	cbnz		x0, 0f
+	teq		r0, #0
+	bne		0f
 
-	ldp		x0, x1, [sp, #16]
+	ldmfd		sp, {r0-r1}
 	bl		efi_main
 
-0:	ldp		x29, x30, [sp], #32
-	ret
+0:	add		sp, sp, #12
+	ldr		pc, [sp], #4
+
+.L_DYNAMIC:
+	.word		_DYNAMIC - .

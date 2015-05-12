@@ -63,12 +63,22 @@ OBJCOPY      := $(prefix)$(CROSS_COMPILE)objcopy
 # Host/target identification
 OS           := $(shell uname -s)
 HOSTARCH     := $(shell $(HOSTCC) -dumpmachine | cut -f1 -d- | sed s,i[3456789]86,ia32,)
-ARCH         := $(shell $(CC) -dumpmachine | cut -f1 -d-| sed s,i[3456789]86,ia32,)
+ARCH         := $(HOSTARCH)
+
+# Get ARCH from the compiler if cross compiling 
+ifneq ($(CROSS_COMPILE),)
+  override ARCH := $(shell $(CC) -dumpmachine | cut -f1 -d-| sed s,i[3456789]86,ia32,)
+endif
 
 # FreeBSD (and possibly others) reports amd64 instead of x86_64
 ifeq ($(ARCH),amd64)
   override ARCH := x86_64
 endif
+
+#
+# Where to build the package
+#
+OBJDIR       := $(TOPDIR)/$(ARCH)
 
 #
 # Variables below derived from variables above
@@ -112,14 +122,31 @@ endif
 # otherwise we need to compose the PE/COFF header using the assembler
 #
 ifneq ($(ARCH),aarch64)
+ifneq ($(ARCH),arm)
 export HAVE_EFI_OBJCOPY=y
+endif
+endif
+
+ifneq ($(ARCH),arm)
+export LIBGCC=$(shell $(CC) $(ARCH3264) -print-libgcc-file-name)
+endif
+
+ifeq ($(ARCH),arm)
+CFLAGS += -marm
 endif
 
 # Generic compilation flags
 INCDIR  += -I$(SRCDIR) -I$(TOPDIR)/inc -I$(TOPDIR)/inc/$(ARCH) \
            -I$(TOPDIR)/inc/protocol
+
+ifeq (FreeBSD, $(findstring FreeBSD, $(OS)))
+CFLAGS  += $(ARCH3264) -O2 -fpic -Wall -fshort-wchar -fno-strict-aliasing \
+           -ffreestanding -fno-stack-protector
+else
 CFLAGS  += $(ARCH3264) -O2 -fpic -Wall -fshort-wchar -fno-strict-aliasing \
            -fno-merge-constants -ffreestanding -fno-stack-protector       \
            -fno-stack-check
+endif
+
 ASFLAGS += $(ARCH3264)
 LDFLAGS	+= -nostdlib --warn-common --no-undefined --fatal-warnings
