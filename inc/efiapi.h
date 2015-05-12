@@ -210,9 +210,13 @@ VOID
     { 0x8BE4DF61, 0x93CA, 0x11d2, {0xAA, 0x0D, 0x00, 0xE0, 0x98, 0x03, 0x2B, 0x8C} }
 
 // Variable attributes
-#define EFI_VARIABLE_NON_VOLATILE           0x00000001
-#define EFI_VARIABLE_BOOTSERVICE_ACCESS     0x00000002
-#define EFI_VARIABLE_RUNTIME_ACCESS         0x00000004
+#define EFI_VARIABLE_NON_VOLATILE                          0x00000001
+#define EFI_VARIABLE_BOOTSERVICE_ACCESS                    0x00000002
+#define EFI_VARIABLE_RUNTIME_ACCESS                        0x00000004
+#define EFI_VARIABLE_HARDWARE_ERROR_RECORD                 0x00000008
+#define EFI_VARIABLE_AUTHENTICATED_WRITE_ACCESS            0x00000010
+#define EFI_VARIABLE_TIME_BASED_AUTHENTICATED_WRITE_ACCESS 0x00000020
+#define EFI_VARIABLE_APPEND_WRITE                          0x00000040
 
 // Variable size limitation
 #define EFI_MAXIMUM_VARIABLE_SIZE           1024
@@ -581,6 +585,51 @@ EFI_STATUS
     OUT UINT32                  *HighCount
     );
 
+typedef struct {
+    UINT64                      Length;
+    union {
+        EFI_PHYSICAL_ADDRESS    DataBlock;
+       EFI_PHYSICAL_ADDRESS    ContinuationPointer;
+    } Union;
+} EFI_CAPSULE_BLOCK_DESCRIPTOR;
+
+typedef struct {
+    EFI_GUID                    CapsuleGuid;
+    UINT32                      HeaderSize;
+    UINT32                      Flags;
+    UINT32                      CapsuleImageSize;
+} EFI_CAPSULE_HEADER;
+
+#define CAPSULE_FLAGS_PERSIST_ACROSS_RESET    0x00010000
+#define CAPSULE_FLAGS_POPULATE_SYSTEM_TABLE   0x00020000
+#define CAPSULE_FLAGS_INITIATE_RESET          0x00040000
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_UPDATE_CAPSULE) (
+    IN EFI_CAPSULE_HEADER       **CapsuleHeaderArray,
+    IN UINTN                    CapsuleCount,
+    IN EFI_PHYSICAL_ADDRESS     ScatterGatherList OPTIONAL
+    );
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_QUERY_CAPSULE_CAPABILITIES) (
+    IN  EFI_CAPSULE_HEADER       **CapsuleHeaderArray,
+    IN  UINTN                    CapsuleCount,
+    OUT UINT64                   *MaximumCapsuleSize,
+    OUT EFI_RESET_TYPE           *ResetType
+    );
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_QUERY_VARIABLE_INFO) (
+    IN  UINT32                  Attributes,
+    OUT UINT64                  *MaximumVariableStorageSize,
+    OUT UINT64                  *RemainingVariableStorageSize,
+    OUT UINT64                  *MaximumVariableSize
+    );
+
 //
 // Protocol handler functions
 //
@@ -666,7 +715,7 @@ EFI_STATUS
 // Standard EFI table header
 //
 
-typedef struct _EFI_TABLE_HEARDER {
+typedef struct _EFI_TABLE_HEADER {
     UINT64                      Signature;
     UINT32                      Revision;
     UINT32                      HeaderSize;
@@ -716,6 +765,9 @@ typedef struct  {
     EFI_GET_NEXT_HIGH_MONO_COUNT    GetNextHighMonotonicCount;
     EFI_RESET_SYSTEM                ResetSystem;
 
+    EFI_UPDATE_CAPSULE              UpdateCapsule;
+    EFI_QUERY_CAPSULE_CAPABILITIES  QueryCapsuleCapabilities;
+    EFI_QUERY_VARIABLE_INFO         QueryVariableInfo;
 } EFI_RUNTIME_SERVICES;
 
 
