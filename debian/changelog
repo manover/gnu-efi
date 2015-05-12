@@ -1,6 +1,9 @@
-gnu-efi (3.0w-1) unstable; urgency=low
+gnu-efi (3.0.2-1) unstable; urgency=medium
 
-  * Imported Upstream version 3.0w
+  * Imported Upstream version 3.0.2
+  * debian/rules: Simplify by using upstream Makefile for install
+  * debian/control: Bump Standards-Version to 3.9.6
+  * debian/copyright: Remove spaces from License keyword
   * Add any-arm and any-arm64 to the architecture list
   * inc-efistdarg.h-Use-gcc-builtins-instead-of-stdarg.h.patch: Applied upstream
 
