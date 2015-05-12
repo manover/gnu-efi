@@ -5,13 +5,13 @@ Source: http://sourceforge.net/projects/gnu-efi/files/
 
 Files: *
 Copyright: 1999-2014 Hewlett-Packard Co.
-License: BSD (HP)
+License: BSD-3-clause-HP
 
-Files: inc/* lib/*
+Files: inc/protocol/efidbg.h inc/protocol/ia64/eficontext.h
 Copyright: 1999-2007 Intel Corp.
-License: BSD (Intel)
+License: BSD-4-clause-Intel
 
-License: BSD (HP)
+License: BSD-3-clause-HP
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
@@ -40,7 +40,7 @@ License: BSD (HP)
  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  SUCH DAMAGE.
 
-License: BSD (Intel)
+License: BSD-4-clause-Intel
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
