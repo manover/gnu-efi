@@ -2,7 +2,6 @@ Source: gnu-efi
 Section: devel
 Priority: optional
 Maintainer: Julian Andres Klode <jak@debian.org>
-Uploaders: Nigel Croxon <nigel.croxon@hp.com>
 Build-Depends:
  debhelper (>= 9),
  binutils,
