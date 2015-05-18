@@ -6,14 +6,14 @@ Uploaders: Nigel Croxon <nigel.croxon@hp.com>
 Build-Depends:
  debhelper (>= 9),
  binutils,
- gcc-multilib [amd64 i386 kfreebsd-amd64],
+ gcc-multilib [any-amd64 i386],
 Standards-Version: 3.9.6
 Vcs-Git: git://anonscm.debian.org/collab-maint/gnu-efi.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/gnu-efi.git
 Homepage: http://sourceforge.net/projects/gnu-efi/
 
 Package: gnu-efi
-Architecture: amd64 i386 ia64 kfreebsd-amd64 any-arm any-arm64
+Architecture: any-amd64 any-i386 any-arm64 armhf
 Depends: ${misc:Depends}
 Description: Library for developing EFI applications
  GNU toolchain for building applications that can run in the environment
