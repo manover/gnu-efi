@@ -1,23 +1,23 @@
 #!/usr/bin/make -f
 
-DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
-DEB_BUILD_ARCH ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+DEB_HOST_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
+DEB_BUILD_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH_CPU)
 
 # The architecture we are building on
-ifneq (,$(findstring i386,$(DEB_BUILD_ARCH)))
+ifeq (i386,$(DEB_BUILD_ARCH_CPU))
 	BUILD_ARCH := ia32
-else ifneq (,$(findstring amd64,$(DEB_BUILD_ARCH)))
+else ifeq (amd64,$(DEB_BUILD_ARCH_CPU))
 	BUILD_ARCH := x86_64
 else
 	BUILD_ARCH := $(shell dpkg-architecture -qDEB_BUILD_GNU_CPU)
 endif
 
 # The architecture we are building for
-ifneq (,$(findstring i386,$(DEB_HOST_ARCH)))
+ifeq (i386,$(DEB_BUILD_ARCH_CPU))
 	HOST_ARCH := ia32
 	COMPAT_ARCH := x86_64
 	COMPAT_APPEND := 64
-else ifneq (,$(findstring amd64,$(DEB_HOST_ARCH)))
+else ifeq (amd64,$(DEB_BUILD_ARCH_CPU))
 	HOST_ARCH := x86_64
 	COMPAT_ARCH := ia32
 	COMPAT_APPEND := 32
