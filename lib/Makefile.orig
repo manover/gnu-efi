@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 1999-2007 Hewlett-Packard Co.
+#  Copyright (C) 1999-2001 Hewlett-Packard Co.
 #	Contributed by David Mosberger <davidm@hpl.hp.com>
 #	Contributed by Stephane Eranian <eranian@hpl.hp.com>
 #
@@ -34,25 +34,58 @@
 #    SUCH DAMAGE.
 #
 
-%.efi: %.so
-	$(OBJCOPY) -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel \
-		    -j .rela -j .rel.* -j .rela.* -j .rel* -j .rela* \
-		    -j .reloc $(FORMAT) $*.so $@
+SRCDIR = .
 
-%.efi.debug: %.so
-	$(OBJCOPY) -j .debug_info -j .debug_abbrev -j .debug_aranges \
-		-j .debug_line -j .debug_str -j .debug_ranges \
-		-j .note.gnu.build-id \
-		$(FORMAT) $*.so $@
+VPATH = $(SRCDIR)
 
-%.so: %.o
-	$(LD) $(LDFLAGS) $^ -o $@ $(LOADLIBES)
+include $(SRCDIR)/../Make.defaults
 
-%.o: %.c
-	$(CC) $(INCDIR) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+TOPDIR = $(SRCDIR)/..
 
-%.S: %.c
-	$(CC) $(INCDIR) $(CFLAGS) $(CPPFLAGS) -S $< -o $@
+CDIR = $(TOPDIR)/..
+FILES = boxdraw smbios console crc data debug dpath  \
+        error event guid hand hw init lock   \
+        misc print sread str cmdline \
+	runtime/rtlock runtime/efirtlib runtime/rtstr runtime/vm runtime/rtdata  \
+	$(ARCH)/initplat $(ARCH)/math 
 
-%.E: %.c
-	$(CC) $(INCDIR) $(CFLAGS) $(CPPFLAGS) -E $< -o $@
+ifeq ($(ARCH),ia64)
+FILES += $(ARCH)/salpal $(ARCH)/palproc
+endif
+
+ifeq ($(ARCH),x86_64)
+FILES += $(ARCH)/callwrap $(ARCH)/efi_stub
+endif
+
+ifeq ($(ARCH),arm)
+FILES += $(ARCH)/lib1funcs $(ARCH)/div64
+endif
+
+OBJS  = $(FILES:%=%.o)
+
+SUBDIRS = ia32 x86_64 ia64 aarch64 arm runtime
+
+LIBDIRINSTALL = $(INSTALLROOT)$(LIBDIR)
+
+all: libsubdirs libefi.a
+
+.PHONY: libsubdirs
+libsubdirs:
+	for sdir in $(SUBDIRS); do mkdir -p $$sdir; done
+
+libefi.a: $(patsubst %,libefi.a(%),$(OBJS))
+
+clean:
+	rm -f libefi.a *~ $(OBJS) */*.o
+
+$(LIBDIRINSTALL):
+	mkdir -p $@
+
+$(LIBDIRINSTALL)/libefi.a: libefi.a | $(LIBDIRINSTALL)
+	$(INSTALL) -m 644 $< $(dir $@)
+
+install: $(LIBDIRINSTALL)/libefi.a
+
+include $(SRCDIR)/../Make.rules
+
+.PHONY: libsubdirs
