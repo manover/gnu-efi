@@ -3,6 +3,7 @@
 DEB_HOST_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
 DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH_CPU)
+DEB_BUILD_ARCH_OS ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH_OS)
 
 # Cross building support
 ifneq ($(DEB_BUILD_ARCH),$(DEB_HOST_ARCH))
@@ -21,8 +22,10 @@ endif
 # The architecture we are building for
 ifeq (i386,$(DEB_BUILD_ARCH_CPU))
 	HOST_ARCH := ia32
-	COMPAT_ARCH := x86_64
-	COMPAT_APPEND := 64
+	ifeq (linux,$(DEB_BUILD_ARCH_OS))
+		COMPAT_ARCH := x86_64
+		COMPAT_APPEND := 64
+	fi
 else ifeq (amd64,$(DEB_BUILD_ARCH_CPU))
 	HOST_ARCH := x86_64
 	COMPAT_ARCH := ia32
