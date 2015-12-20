@@ -1,1 +1,2 @@
 lib-arm-setjmp.S-Use-function-instead-of-function.patch
+don-t-break-with-old-compilers-and-DGNU_EFI_USE_MS_ABI.patch
