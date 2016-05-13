@@ -1,0 +1,43 @@
+#!/usr/bin/make -f
+
+include /usr/share/dpkg/architecture.mk
+
+export DH_VERBOSE=1
+export DH_OPTIONS=-v
+
+ifneq ($(DEB_BUILD_ARCH),$(DEB_HOST_ARCH))
+export CROSS_COMPILE = $(DEB_HOST_GNU_TYPE)-
+endif
+
+# The architecture we are building for
+ifneq (,$(findstring i386,$(DEB_HOST_ARCH)))
+  HOST_ARCH := ia32
+else
+# pretty much anything else
+  HOST_ARCH := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU)
+# forcefully add -m64 switch for x32 arch to get 64bit code
+ifeq (x32,$(DEB_HOST_ARCH))
+  ARCH3264 = ARCH3264=-m64
+endif
+endif
+
+ifeq (default,$(origin CC))
+  CC = gcc
+endif
+
+%:
+	dh $@
+
+override_dh_auto_clean:
+	$(MAKE) clean CC=$(CC) ARCH=$(HOST_ARCH)
+	rm -rf $(HOST_ARCH)
+
+override_dh_auto_build:
+	$(MAKE) $(ARCH3264) ARCH=$(HOST_ARCH) CC=$(CC) mkvars
+	$(MAKE) $(ARCH3264) ARCH=$(HOST_ARCH) CC=$(CC)
+
+override_dh_auto_install:
+	$(MAKE) install $(ARCH3264) CC=$(CC) ARCH=$(HOST_ARCH) INSTALLROOT=$(CURDIR)/debian/gnu-efi \
+		PREFIX=/usr LIBDIR=/usr/lib/$(DEB_HOST_MULTIARCH)
+	mv debian/gnu-efi/usr/lib/$(DEB_HOST_MULTIARCH)/*.lds debian/gnu-efi/usr/lib
+	ln -s ../elf_$(HOST_ARCH)_efi.lds debian/gnu-efi/usr/lib/$(DEB_HOST_MULTIARCH)
