@@ -1,9 +1,41 @@
+gnu-efi (3.0.3-2.4) unstable; urgency=medium
+
+  * Generate x86_64 code for x32 arch, same as amd64
+
+ -- Denis Bychkov <manover@gmail.com>  Fri, 13 May 2016 16:13:30 -0400
+
+gnu-efi (3.0.3-2.3) unstable; urgency=medium
+
+  * Make a symlink in multiarch dir pointing back one level to lds file
+
+ -- Denis Bychkov <manover@gmail.com>  Thu, 12 May 2016 17:56:48 -0400
+
+gnu-efi (3.0.3-2.2) unstable; urgency=medium
+
+  * Moved ld script (elf_<arch>_efi.lds) up one level from lib/<multiarch>
+
+ -- Denis Bychkov <manover@gmail.com>  Fri, 25 Dec 2015 12:59:33 -0500
+
+gnu-efi (3.0.3-2.1) unstable; urgency=medium
+
+  * Debian Build 3.0.3-2
+
+ -- Denis Bychkov <manover@gmail.com>  Wed, 18 Nov 2015 19:05:51 -0500
+
 gnu-efi (3.0.3-2) unstable; urgency=medium
 
   * Do not try to build multilib on non-Linux i386 builds
   * Fix building on armhf: replace @function by %function
 
  -- Julian Andres Klode <jak@debian.org>  Sun, 29 Nov 2015 12:32:59 +0100
+
+gnu-efi (3.0.3-1.1) unstable; urgency=medium
+
+  * Multi-Arch: same
+  * Move libraries to multi-arch location
+  * Drop building compat arch libraries (can now be cross-installed)
+
+ -- Denis Bychkov <manover@gmail.com>  Wed, 18 Nov 2015 19:05:51 -0500
 
 gnu-efi (3.0.3-1) unstable; urgency=medium
 
