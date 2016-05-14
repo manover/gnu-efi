@@ -1,0 +1,18 @@
+--- a/Makefile
++++ b/Makefile
+@@ -48,6 +48,7 @@ gnuefi: lib
+ all:	check_gcc $(SUBDIRS)
+ 
+ mkvars:
++	@echo "=========================== gnu-efi install parameters  ===================="
+ 	@echo AR=$(AR)
+ 	@echo ARCH=$(ARCH)
+ 	@echo ARCH3264=$(ARCH3264)
+@@ -73,6 +74,7 @@ mkvars:
+ 	@echo RANLIB=$(RANLIB)
+ 	@echo SRCDIR=$(SRCDIR)
+ 	@echo TOPDIR=$(TOPDIR)
++	@echo "============================================================================"
+ 
+ $(SUBDIRS):
+ 	mkdir -p $(OBJDIR)/$@

@@ -1,3 +1,12 @@
+gnu-efi (3.0.4-1) unstable; urgency=medium
+
+  * New upstream release
+  * Drop patch, as it was applied upstream
+  * Remove redundant build dependency
+  * Make possible for builder to override CC
+
+ -- Denis Bychkov <manover@gmail.com>  Fri, 13 May 2016 17:47:55 -0400
+
 gnu-efi (3.0.3-2.4) unstable; urgency=medium
 
   * Generate x86_64 code for x32 arch, same as amd64
