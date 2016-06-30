@@ -1,0 +1,24 @@
+From: Julian Andres Klode <jak@debian.org>
+Date: Thu, 30 Jun 2016 13:37:30 +0200
+Subject: aarch64: Fix invalid cast from const to non-const
+
+This was wrong and caused the build to fail on Debian
+arm64 buildds.
+---
+ lib/aarch64/initplat.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/lib/aarch64/initplat.c b/lib/aarch64/initplat.c
+index 2ac03a7..46c1e99 100644
+--- a/lib/aarch64/initplat.c
++++ b/lib/aarch64/initplat.c
+@@ -41,7 +41,8 @@ void *memset(void *s, int c, __SIZE_TYPE__ n)
+ 
+ void *memcpy(void *dest, const void *src, __SIZE_TYPE__ n)
+ {
+-    unsigned char *p = dest, *q = src;
++    unsigned char *p = dest;
++    const unsigned char *q = src;
+ 
+     while (n--)
+         *p++ = *q++;
