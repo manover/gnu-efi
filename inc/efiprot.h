@@ -546,6 +546,76 @@ BOOLEAN
     OUT CHAR8                           *Fat
     );
 
+//
+// Hash Protocol
+//
+#define HASH_PROTOCOL \
+  { 0xC5184932, 0xDBA5, 0x46DB, { 0xA5, 0xBA, 0xCC, 0x0B, 0xDA, 0x9C, 0x14, 0x35 } }
+
+#define EFI_HASH_ALGORITHM_SHA1 \
+  { 0x2AE9D80F, 0x3FB2, 0x4095, { 0xB7, 0xB1, 0xE9, 0x31, 0x57, 0xB9, 0x46, 0xB6 } } // Deprecated
+
+#define EFI_HASH_ALGORITHM_SHA224 \
+  { 0x8DF01A06, 0x9BD5, 0x4BF7, { 0xB0, 0x21, 0xDB, 0x4F, 0xD9, 0xCC, 0xF4, 0x5B } } // Deprecated
+
+#define EFI_HASH_ALGORITHM_SHA256 \
+  { 0x51AA59DE, 0xFDF2, 0x4EA3, { 0xBC, 0x63, 0x87, 0x5F, 0xB7, 0x84, 0x2E, 0xE9 } } // Deprecated
+
+#define EFI_HASH_ALGORITHM_SHA384 \
+  { 0xEFA96432, 0xDE33, 0x4DD2, { 0xAE, 0xE6, 0x32, 0x8C, 0x33, 0xDF, 0x77, 0x7A } } // Deprecated
+
+#define EFI_HASH_ALGORITHM_SHA512 \
+  { 0xCAA4381E, 0x750C, 0x4770, { 0xB8, 0x70, 0x7A, 0x23, 0xB4, 0xE4, 0x21, 0x30 } } // Deprecated
+
+#define EFI_HASH_ALGORITHM_MD5 \
+  { 0x0AF7C79C, 0x65B5, 0x4319, { 0xB0, 0xAE, 0x44, 0xEC, 0x48, 0x4E, 0x4A, 0xD7 } } // Deprecated
+
+#define EFI_HASH_ALGORITHM_SHA1_NOPAD \
+  { 0x24C5DC2F, 0x53E2, 0x40CA, { 0x9E, 0xD6, 0xA5, 0xD9, 0xA4, 0x9F, 0x46, 0x3B } }
+
+#define EFI_HASH_ALGORITHM_SHA256_NOPAD \
+  { 0x8628752A, 0x6CB7, 0x4814, { 0x96, 0xFC, 0x24, 0xA8, 0x15, 0xAC, 0x22, 0x26 } }
+
+
+INTERFACE_DECL(_EFI_HASH);
+
+typedef UINT8 EFI_MD5_HASH[16];
+typedef UINT8 EFI_SHA1_HASH[20];
+typedef UINT8 EFI_SHA224_HASH[28];
+typedef UINT8 EFI_SHA256_HASH[32];
+typedef UINT8 EFI_SHA384_HASH[48];
+typedef UINT8 EFI_SHA512_HASH[64];
+typedef union _EFI_HASH_OUTPUT {
+  EFI_MD5_HASH                    *Md5Hash;
+  EFI_SHA1_HASH                   *Sha1Hash;
+  EFI_SHA224_HASH                 *Sha224Hash;
+  EFI_SHA256_HASH                 *Sha256Hash;
+  EFI_SHA384_HASH                 *Sha384Hash;
+  EFI_SHA512_HASH                 *Sha512Hash;
+} EFI_HASH_OUTPUT;
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_HASH_GET_HASH_SIZE) (
+  IN CONST struct _EFI_HASH       *This,
+  IN CONST EFI_GUID               *HashAlgorithm,
+  OUT UINTN                       *HashSize);
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_HASH_HASH) (
+  IN CONST struct _EFI_HASH       *This,
+  IN CONST EFI_GUID               *HashAlgorithm,
+  IN BOOLEAN                      Extend,
+  IN CONST UINT8                  *Message,
+  IN UINT64                       MessageSize,
+  IN OUT EFI_HASH_OUTPUT          *Hash);
+
+typedef struct _EFI_HASH {
+  EFI_HASH_GET_HASH_SIZE                  GetHashSize;
+  EFI_HASH_HASH                           Hash;
+} EFI_HASH;
+
 
 typedef struct _EFI_UNICODE_COLLATION_INTERFACE {
 
@@ -752,6 +822,148 @@ typedef struct _EFI_SERVICE_BINDING {
     EFI_SERVICE_BINDING_CREATE_CHILD  CreateChild;
     EFI_SERVICE_BINDING_DESTROY_CHILD DestroyChild;
 } EFI_SERVICE_BINDING;
+
+//
+// Driver Binding Protocol
+//
+
+#define DRIVER_BINDING_PROTOCOL \
+    { 0x18A031AB, 0xB443, 0x4D1A, { 0xA5, 0xC0, 0x0C, 0x09, 0x26, 0x1E, 0x9F, 0x71} }
+
+INTERFACE_DECL(_EFI_DRIVER_BINDING);
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_DRIVER_SUPPORTED) (
+    IN struct _EFI_DRIVER_BINDING *This,
+    IN EFI_HANDLE                 ControllerHandle,
+    IN EFI_DEVICE_PATH            *RemainingDevicePath OPTIONAL);
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_DRIVER_START) (
+    IN struct _EFI_DRIVER_BINDING *This,
+    IN EFI_HANDLE                 ControllerHandle,
+    IN EFI_DEVICE_PATH            *RemainingDevicePath OPTIONAL);
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_DRIVER_STOP) (
+    IN struct _EFI_DRIVER_BINDING *This,
+    IN EFI_HANDLE                 ControllerHandle,
+    IN UINTN                      NumberOfChildren,
+    IN EFI_HANDLE                 *ChildHandleBuffer OPTIONAL);
+
+typedef struct _EFI_DRIVER_BINDING {
+    EFI_DRIVER_SUPPORTED          Supported;
+    EFI_DRIVER_START              Start;
+    EFI_DRIVER_STOP               Stop;
+    UINT32                        Version;
+    EFI_HANDLE                    ImageHandle;
+    EFI_HANDLE                    DriverBindingHandle;
+} EFI_DRIVER_BINDING;
+
+//
+// Component Name Protocol
+// Deprecated - use Component Name 2 Protocol instead
+//
+
+#define COMPONENT_NAME_PROTOCOL \
+    {0x107A772C, 0xD5E1, 0x11D4, { 0x9A, 0x46, 0x00, 0x90, 0x27, 0x3F, 0xC1, 0x4D} }
+
+INTERFACE_DECL(_EFI_COMPONENT_NAME);
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_COMPONENT_NAME_GET_DRIVER_NAME) (
+  IN struct _EFI_COMPONENT_NAME   *This,
+  IN CHAR8                        *Language,
+  OUT CHAR16                      **DriverName);
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_COMPONENT_NAME_GET_CONTROLLER_NAME) (
+  IN struct _EFI_COMPONENT_NAME   *This,
+  IN EFI_HANDLE                   ControllerHandle,
+  IN EFI_HANDLE                   ChildHandle OPTIONAL,
+  IN CHAR8                        *Language,
+  OUT CHAR16                      **ControllerName);
+
+typedef struct _EFI_COMPONENT_NAME {
+  EFI_COMPONENT_NAME_GET_DRIVER_NAME     GetDriverName;
+  EFI_COMPONENT_NAME_GET_CONTROLLER_NAME GetControllerName;
+  CHAR8                                  *SupportedLanguages;
+} EFI_COMPONENT_NAME;
+
+//
+// Component Name 2 Protocol
+//
+
+#define COMPONENT_NAME2_PROTOCOL \
+    {0x6A7A5CFF, 0xE8D9, 0x4F70, { 0xBA, 0xDA, 0x75, 0xAB, 0x30, 0x25, 0xCE, 0x14} }
+
+INTERFACE_DECL(_EFI_COMPONENT_NAME2);
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_COMPONENT_NAME2_GET_DRIVER_NAME) (
+  IN struct _EFI_COMPONENT_NAME2  *This,
+  IN CHAR8                        *Language,
+  OUT CHAR16                      **DriverName);
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_COMPONENT_NAME2_GET_CONTROLLER_NAME) (
+  IN struct _EFI_COMPONENT_NAME2  *This,
+  IN EFI_HANDLE                   ControllerHandle,
+  IN EFI_HANDLE                   ChildHandle OPTIONAL,
+  IN CHAR8                        *Language,
+  OUT CHAR16                      **ControllerName);
+
+typedef struct _EFI_COMPONENT_NAME2 {
+  EFI_COMPONENT_NAME2_GET_DRIVER_NAME     GetDriverName;
+  EFI_COMPONENT_NAME2_GET_CONTROLLER_NAME GetControllerName;
+  CHAR8                                   *SupportedLanguages;
+} EFI_COMPONENT_NAME2;
+
+
+//
+// Loaded Image Protocol
+//
+#define LOADED_IMAGE_PROTOCOL      \
+    { 0x5B1B31A1, 0x9562, 0x11d2, {0x8E, 0x3F, 0x00, 0xA0, 0xC9, 0x69, 0x72, 0x3B} }
+
+typedef 
+EFI_STATUS
+(EFIAPI *EFI_IMAGE_UNLOAD) (
+    IN EFI_HANDLE                   ImageHandle
+    );
+
+#define EFI_IMAGE_INFORMATION_REVISION      0x1000
+typedef struct {
+    UINT32                          Revision;
+    EFI_HANDLE                      ParentHandle;
+    struct _EFI_SYSTEM_TABLE        *SystemTable;
+
+    // Source location of image
+    EFI_HANDLE                      DeviceHandle;
+    EFI_DEVICE_PATH                 *FilePath;
+    VOID                            *Reserved;
+
+    // Images load options
+    UINT32                          LoadOptionsSize;
+    VOID                            *LoadOptions;
+
+    // Location of where image was loaded
+    VOID                            *ImageBase;
+    UINT64                          ImageSize;
+    EFI_MEMORY_TYPE                 ImageCodeType;
+    EFI_MEMORY_TYPE                 ImageDataType;
+
+    // If the driver image supports a dynamic unload request
+    EFI_IMAGE_UNLOAD                Unload;
+} EFI_LOADED_IMAGE;
+
 
 #endif
 
