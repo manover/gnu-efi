@@ -1,5 +1,36 @@
+/*
+ * Copright (C) 2014 - 2015 Linaro Ltd.
+ * Author: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice and this list of conditions, without modification.
+ * 2. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * Alternatively, this software may be distributed under the terms of the
+ * GNU General Public License as published by the Free Software Foundation;
+ * either version 2 of the License, or (at your option) any later version.
+ */
 
+#if !defined(__STDC_VERSION__) || (__STDC_VERSION__ < 199901L )
+
+// ANSI C 1999/2000 stdint.h integer width declarations
+
+typedef unsigned long long  uint64_t;
+typedef long long           int64_t;
+typedef unsigned int        uint32_t;
+typedef int                 int32_t;
+typedef unsigned short      uint16_t;
+typedef short               int16_t;
+typedef unsigned char       uint8_t;
+typedef signed char         int8_t;   // unqualified 'char' is unsigned on ARM
+
+#else
 #include <stdint.h>
+#endif
 
 /*
  * This prevents GCC from emitting GOT based relocations, and use R_ARM_REL32
@@ -125,13 +156,8 @@ typedef uint32_t   UINTN;
 #define uefi_call_wrapper(func, va_num, ...) func(__VA_ARGS__)
 #define EFI_FUNCTION
 
-extern UINT64 __DivU64x32(UINT64 Dividend, UINTN Divisor, UINTN *Remainder);
-
 static inline UINT64 DivU64x32(UINT64 Dividend, UINTN Divisor, UINTN *Remainder)
 {
-    if (Dividend >> 32)
-        return __DivU64x32(Dividend, Divisor, Remainder);
-
     /*
      * GCC turns a division into a multiplication and shift with precalculated
      * constants if the divisor is constant and the dividend fits into a 32 bit
@@ -139,7 +165,7 @@ static inline UINT64 DivU64x32(UINT64 Dividend, UINTN Divisor, UINTN *Remainder)
      * library functions.
      */
     if (Remainder)
-        *Remainder = (UINTN)Dividend % Divisor;
-    Dividend = (UINTN)Dividend / Divisor;
+        *Remainder = Dividend % Divisor;
+    Dividend = Dividend / Divisor;
     return Dividend;
 }

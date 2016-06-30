@@ -38,6 +38,7 @@ SECTIONS
    . = ALIGN(16);
    _bss_end = .;
   }
+
   .rela.dyn : { *(.rela.dyn) }
   .rela.plt : { *(.rela.plt) }
   .rela.got : { *(.rela.got) }
@@ -50,6 +51,7 @@ SECTIONS
   . = ALIGN(4096);
   .dynstr   : { *(.dynstr) }
   . = ALIGN(4096);
+  .note.gnu.build-id : { *(.note.gnu.build-id) }
   /DISCARD/ :
   {
     *(.rel.reloc)
