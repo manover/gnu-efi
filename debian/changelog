@@ -1,3 +1,16 @@
+gnu-efi (3.0.4-1) unstable; urgency=medium
+
+  * Merge gcc 4.6 support patch from Ubuntu
+  * Imported Upstream version 3.0.4
+  * Add patch: "ARM: hide 'hidden' pragma for hosted build" (Closes: #828887)
+  * Rebase patches against 3.0.4
+  * Update copyright file, new upstream release fixes GPL issue
+    (Closes: #808472)
+  * debian/control: Update Vcs URIs to https
+  * Bump Standards-Version to 3.9.8
+
+ -- Julian Andres Klode <jak@debian.org>  Thu, 30 Jun 2016 11:52:10 +0200
+
 gnu-efi (3.0.3-2) unstable; urgency=medium
 
   * Do not try to build multilib on non-Linux i386 builds
