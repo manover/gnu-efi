@@ -1,3 +1,10 @@
+gnu-efi (3.0.4-2) unstable; urgency=medium
+
+  * aarch64: Fix invalid cast from const to non-const
+  * Do not build with -Werror
+
+ -- Julian Andres Klode <jak@debian.org>  Thu, 30 Jun 2016 13:41:30 +0200
+
 gnu-efi (3.0.4-1) unstable; urgency=medium
 
   * Merge gcc 4.6 support patch from Ubuntu
