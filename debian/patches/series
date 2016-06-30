@@ -1,1 +1,5 @@
 pretty-print-overview.patch
+don-t-break-with-old-compilers-and-DGNU_EFI_USE_MS_ABI.patch
+ARM-hide-hidden-pragma-for-hosted-build.patch
+aarch64-Fix-invalid-cast-from-const-to-non-const.patch
+Make.defaults-Remove-Werror-from-CFLAGS.patch

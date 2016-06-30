@@ -1,0 +1,28 @@
+From: Julian Andres Klode <jak@debian.org>
+Date: Thu, 30 Jun 2016 13:40:14 +0200
+Subject: Make.defaults: Remove -Werror from CFLAGS
+
+This can easily break any future build by minor
+issues that the compiler suddenly picks up.
+---
+ Make.defaults | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Make.defaults b/Make.defaults
+index d825397..97360ac 100644
+--- a/Make.defaults
++++ b/Make.defaults
+@@ -140,11 +140,11 @@ INCDIR  += -I$(SRCDIR) -I$(TOPDIR)/inc -I$(TOPDIR)/inc/$(ARCH) \
+            -I$(TOPDIR)/inc/protocol
+ 
+ ifeq (FreeBSD, $(findstring FreeBSD, $(OS)))
+-CFLAGS  += $(ARCH3264) -g -O2 -fpic -Wall -Wextra -Werror \
++CFLAGS  += $(ARCH3264) -g -O2 -fpic -Wall -Wextra \
+            -fshort-wchar -fno-strict-aliasing \
+            -ffreestanding -fno-stack-protector
+ else
+-CFLAGS  += $(ARCH3264) -g -O2 -fpic -Wall -Wextra -Werror \
++CFLAGS  += $(ARCH3264) -g -O2 -fpic -Wall -Wextra \
+            -fshort-wchar -fno-strict-aliasing \
+            -fno-merge-constants -ffreestanding -fno-stack-protector \
+            -fno-stack-check

@@ -1,3 +1,16 @@
+gnu-efi (3.0.4-2.1) unstable; urgency=medium
+
+  * ILC
+
+ -- Denis Bychkov <manover@gmail.com>  Thu, 30 Jun 2016 17:31:59 -0400
+
+gnu-efi (3.0.4-2) unstable; urgency=medium
+
+  * aarch64: Fix invalid cast from const to non-const
+  * Do not build with -Werror
+
+ -- Julian Andres Klode <jak@debian.org>  Thu, 30 Jun 2016 13:41:30 +0200
+
 gnu-efi (3.0.4-1) unstable; urgency=medium
 
   * New upstream release
@@ -6,6 +19,19 @@ gnu-efi (3.0.4-1) unstable; urgency=medium
   * Make possible for builder to override CC
 
  -- Denis Bychkov <manover@gmail.com>  Fri, 13 May 2016 17:47:55 -0400
+
+gnu-efi (3.0.4-1) unstable; urgency=medium
+
+  * Merge gcc 4.6 support patch from Ubuntu
+  * Imported Upstream version 3.0.4
+  * Add patch: "ARM: hide 'hidden' pragma for hosted build" (Closes: #828887)
+  * Rebase patches against 3.0.4
+  * Update copyright file, new upstream release fixes GPL issue
+    (Closes: #808472)
+  * debian/control: Update Vcs URIs to https
+  * Bump Standards-Version to 3.9.8
+
+ -- Julian Andres Klode <jak@debian.org>  Thu, 30 Jun 2016 11:52:10 +0200
 
 gnu-efi (3.0.3-2.4) unstable; urgency=medium
 
